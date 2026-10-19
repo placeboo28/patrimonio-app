@@ -35,7 +35,7 @@ button:disabled{opacity:.6}
 <form class="box" id="f" autocomplete="on">
   <img src="icon-192.png" alt="">
   <h1><span class="v">GESTIÓN</span> <span class="p">PATRIMONIO</span></h1>
-  <div class="sub">Acceso privado</div>
+  <div class="sub">Acceso privado · versión __BUILD__</div>
   <input type="text" name="username" value="patrimonio" autocomplete="username" hidden>
   <input type="password" id="pw" placeholder="Contraseña" autocomplete="current-password" required>
   <label><input type="checkbox" id="rem" checked> Recordar en este dispositivo</label>
@@ -93,7 +93,11 @@ document.getElementById('f').addEventListener('submit', async ev => {
   }
   show(html);
 });
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js', {updateViaCache: 'none'}).then(r => { r.update(); document.addEventListener('visibilitychange', () => { if (!document.hidden) r.update(); }); }).catch(()=>{});
+  let recargado = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!recargado && document.getElementById('pw')) { recargado = true; location.reload(); } });
+}
 </script>
 </body>
 </html>
